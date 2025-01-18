@@ -152,4 +152,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-For issues, questions, or contributions, please use the GitHub Issues section.
+No support included! You have to use as is.
