@@ -1,0 +1,55 @@
+#######################################
+# Syntax Coloring Map For DS2482
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+DS2482	KEYWORD1
+DS2482State	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+reset	KEYWORD2
+wakeUp	KEYWORD2
+readStatus	KEYWORD2
+printStatus	KEYWORD2
+selectChannel	KEYWORD2
+getCurrentChannel	KEYWORD2
+wireReset	KEYWORD2
+wireWriteBit	KEYWORD2
+wireReadBit	KEYWORD2
+wireWriteByte	KEYWORD2
+wireReadByte	KEYWORD2
+startTemperatureConversion	KEYWORD2
+checkConversionStatus	KEYWORD2
+readTemperature	KEYWORD2
+readScratchpad	KEYWORD2
+printScratchpad	KEYWORD2
+getState	KEYWORD2
+isBusy	KEYWORD2
+clearState	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+DS2482_DIAGNOSTICS	LITERAL1
+DS2482_CHANNEL_READBACK	LITERAL1
+DS2482_CMD_CHANNEL_SELECT	LITERAL1
+DS2482_CMD_RESET	LITERAL1
+DS2482_CMD_SET_READ	LITERAL1
+DS2482_CMD_WRITE_CONFIG	LITERAL1
+DS2482_CMD_WIRE_RESET	LITERAL1
+DS2482_CMD_WRITE_BYTE	LITERAL1
+DS2482_CMD_READ_BYTE	LITERAL1
+DS2482_CMD_SINGLE_BIT	LITERAL1
+DS2482_STATUS_1WB	LITERAL1
+DS2482_STATUS_PPD	LITERAL1
+DS2482_STATUS_SD	LITERAL1
+DS2482_STATUS_LL	LITERAL1
+DS2482_STATUS_RST	LITERAL1
+DS2482_STATUS_SBR	LITERAL1
+DS2482_STATUS_TSB	LITERAL1
+DS2482_STATUS_DIR	LITERAL1
