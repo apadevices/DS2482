@@ -26,8 +26,8 @@
  * - Detailed status reporting
  */
 
-// Enable diagnostic output
-#define DS2482_DIAGNOSTICS 1
+// To enable diagnostic output you have to modify following line in header file (.h):
+//#define DS2482_DIAGNOSTICS 1
 
 #include <Wire.h>
 #include "DS2482.h"
