@@ -152,4 +152,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-No support included! Use as is of leave it. Sorry about that.
+No support included! Use as is or leave it. Sorry about that.
