@@ -144,7 +144,7 @@ This library is released under the MIT License.
 
 ## Author
 
-APADevices [@kecup]
+APADevices <kecup@vazac.eu>
 
 ## Contributing
 
