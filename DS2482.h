@@ -92,8 +92,8 @@ public:
     // Temperature sensor operations
     bool startTemperatureConversion(uint8_t channel);  // Start conversion
     bool checkConversionStatus();                      // Check if conversion complete
-    bool readTemperature(uint8_t channel, float* temperature);  // Read temperature
-    bool readScratchpad(uint8_t* scratchpad);         // Read sensor scratchpad
+    bool readTemperature(uint8_t channel, float* temperature);  // Read temperature (false on bad data)
+    bool readScratchpad(uint8_t* scratchpad);         // Read sensor scratchpad (false on bad data)
     void printScratchpad(uint8_t* scratchpad);        // Print scratchpad data
 
     // State management
@@ -112,6 +112,7 @@ private:
     void setReadPointer(uint8_t readPointer);     // Set read pointer
     bool waitFor1Wire();                          // Wait for 1-Wire bus ready
     bool beginTemperatureOperation();             // Initialize temperature operation
+    static bool scratchpadValid(const uint8_t* scratchpad);  // CRC8 + DS18B20 config byte check
 };
 
 #endif

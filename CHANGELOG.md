@@ -6,6 +6,26 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.1] — 2026-11-11
+
+### Fixed
+- **`readTemperature()` now checks the sensor data before using it.** The 9-byte scratchpad is verified with
+  its CRC8 (byte 8) and the DS18B20 configuration byte (byte 4: bits 0-4 set, bit 7 clear). Before, the data
+  was never checked: a bit error on a long cable, or a sensor lost during the read (all bytes 0xFF =
+  −0.06 °C), returned a believable wrong temperature as success. Now such a read returns `false` and the
+  temperature is left untouched — read again on your next cycle. An all-zero read (bus stuck low, CRC 0)
+  is caught by the configuration byte check.
+- `readScratchpad()` runs the same check and returns `false` on bad data (the bytes are still filled in).
+- `printStatus()`: no "unused variable" warning when `DS2482_DIAGNOSTICS` is off.
+
+### Notes
+- 85.0 °C, the DS18B20 power-on value (a conversion not yet done), passes the checks — it is valid data.
+  Reject it in your sketch if 85 °C cannot be real in your application (e.g. a pool).
+- Found by APA-CONTROLLER (pool controller, sensors on up to 15 m of cable).
+- Footprint: RAM +0, flash +74–86 B (examples, AVR). Built on AVR only (Mega, Uno).
+
+---
+
 ## [1.1.0] — 2026-04-17
 
 ### Added

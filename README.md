@@ -99,6 +99,19 @@ if (!ds2482.readTemperature(channel, &temperature)) {
 }
 ```
 
+### Data Integrity
+`readTemperature()` returns `true` only when the reading can be trusted (since 1.1.1):
+- a sensor must answer the 1-Wire reset (no sensor on the channel → `false`);
+- the 9-byte scratchpad must pass its **CRC8** (byte 8) — catches bit errors on long cables and a sensor
+  unplugged during the read;
+- the DS18B20 **configuration byte** must look right — catches an all-zero read from a bus stuck low.
+
+On `false` the temperature is left untouched; simply read again on your next cycle. If your sketch keeps the
+last good value, also decide how long it may be used (e.g. mark the sensor missing after a few failed reads).
+
+**85.0 °C** is the DS18B20 power-on value (no conversion done yet) and passes these checks, because a real
+85 °C looks identical. Reject it in your sketch if 85 °C cannot occur in your application.
+
 ## Benefits Over Other Libraries
 
 1. **Simplified Operation**

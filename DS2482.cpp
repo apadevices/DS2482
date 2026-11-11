@@ -162,6 +162,7 @@ bool DS2482::selectChannel(uint8_t channel) {
  */
 void DS2482::printStatus() {
     uint8_t status = readStatus();
+    (void)status;   // only printed with DS2482_DIAGNOSTICS
     DEBUG_PRINT("Status: 0x");
     DEBUG_PRINTLN_HEX(status);
 }
@@ -333,8 +334,11 @@ bool DS2482::checkConversionStatus() {
 /**
  * Read temperature from specified channel
  * @param channel Channel number (0-7)
+ * The scratchpad is checked (CRC8 + configuration byte) before it is used: a bit
+ * error on a long cable or a sensor lost during the read returns false and leaves
+ * *temperature untouched. 85.0 °C (DS18B20 power-on value) is a valid reading here.
  * @param temperature Pointer to store temperature value
- * @return true if temperature read successfully
+ * @return true if temperature read successfully and the data passed the checks
  */
 bool DS2482::readTemperature(uint8_t channel, float* temperature) {
     DEBUG_PRINT("Reading temperature from channel ");
@@ -362,6 +366,12 @@ bool DS2482::readTemperature(uint8_t channel, float* temperature) {
     }
     
     printScratchpad(scratchpad);
+
+    if (!scratchpadValid(scratchpad)) {
+        DEBUG_PRINTLN("Scratchpad check failed (CRC or config byte)");
+        currentState = DS2482State::IDLE;   // the bus works, only this read is bad
+        return false;
+    }
     
     int16_t raw = (scratchpad[1] << 8) | scratchpad[0];
     *temperature = raw / 16.0;
@@ -377,7 +387,8 @@ bool DS2482::readTemperature(uint8_t channel, float* temperature) {
 /**
  * Read sensor scratchpad data
  * @param scratchpad Array to store 9 bytes of scratchpad data
- * @return true if scratchpad read successfully
+ * @return true if scratchpad read successfully and passed the CRC8 / configuration byte check
+ *         (the bytes are filled in either way)
  */
 bool DS2482::readScratchpad(uint8_t* scratchpad) {
     if (!beginTemperatureOperation()) {
@@ -391,7 +402,7 @@ bool DS2482::readScratchpad(uint8_t* scratchpad) {
         scratchpad[i] = wireReadByte();
     }
     
-    return true;
+    return scratchpadValid(scratchpad);
 }
 
 /**
@@ -438,6 +449,29 @@ bool DS2482::waitFor1Wire() {
         delayMicroseconds(100);  // Short delay between checks
     }
     return (millis() - startTime < 100);
+}
+
+/**
+ * Check a DS18B20 scratchpad read.
+ * - Byte 8 is the Dallas/Maxim 1-Wire CRC8 (x^8 + x^5 + x^4 + 1, LSB first) of bytes 0-7.
+ * - An all-zero read (bus stuck low) has CRC 0 and would pass, so the configuration
+ *   register (byte 4) is checked too: bits 0-4 always read 1 and bit 7 reads 0
+ *   (0x1F / 0x3F / 0x5F / 0x7F for 9-12 bit resolution).
+ * @param scratchpad 9 bytes as read from the sensor
+ * @return true if the data can be trusted
+ */
+bool DS2482::scratchpadValid(const uint8_t* scratchpad) {
+    uint8_t crc = 0;
+    for (uint8_t i = 0; i < 8; i++) {
+        uint8_t b = scratchpad[i];
+        for (uint8_t bit = 0; bit < 8; bit++) {
+            uint8_t mix = (crc ^ b) & 0x01;
+            crc >>= 1;
+            if (mix) crc ^= 0x8C;   // 0x31 reflected
+            b >>= 1;
+        }
+    }
+    return crc == scratchpad[8] && (scratchpad[4] & 0x9F) == 0x1F;
 }
 
 /**
